@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Car Price Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 350px;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 120vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+        input[type="text"] {
+            width: 93%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        select{
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #1338BE;
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #6DAFFE;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Enter Car Details</h1>
+        <form action="/predict" method="post">
+
+            <label for="MAKE_LABEL">Car Make:</label>
+            <select id="MAKE_LABEL" name="MAKE_LABEL">
+              <option value="">Select Car Make</option>
+            </select>
+
+            <label for="CAR_MODEL">Car Model:</label>
+            <select id="CAR_MODEL" name="CAR_MODEL">
+              <option value="">Select Car Model</option>
+            </select>
+
+            <script>
+              let makeModels = {};
+
+              // Load car makes
+              fetch('/app/templates/car_makes.json')
+                .then(response => response.json())
+                .then(data => {
+                  const selectElement = document.getElementById('MAKE_LABEL');
+                  data.forEach(make => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = make;
+                    optionElement.text = make;
+                    selectElement.appendChild(optionElement);
+                  });
+                })
+                .catch(error => console.error('Error loading car makes:', error));
+
+              // Load make-model mapping
+              fetch('/app/templates/make_models.json')
+                .then(response => response.json())
+                .then(data => {
+                  makeModels = data;
+                })
+                .catch(error => console.error('Error loading make-models:', error));
+
+              // Listen for changes on the "make" dropdown
+              document.getElementById('MAKE_LABEL').addEventListener('change', function() {
+                const selectedMake = this.value;
+                const modelOptions = makeModels[selectedMake] || [];
+                const modelSelect = document.getElementById('CAR_MODEL');
+
+                // Clear existing options
+                modelSelect.innerHTML = '<option value="">Select Car Model</option>';
+
+                // Populate model dropdown
+                modelOptions.forEach(model => {
+                  const optionElement = document.createElement('option');
+                  optionElement.value = model;
+                  optionElement.text = model;
+                  modelSelect.appendChild(optionElement);
+                });
+              });
+            </script>
+
+            <label for="FUEL_TYPE_ID">Fuel Type:</label>
+            <select id="FUEL_TYPE_ID" name="FUEL_TYPE_ID">
+            <option value="">Select fuel type</option>
+              <option value="">Select Fuel Type</option>
+              <option value="1">Petrol</option>
+              <option value="2">Diesel</option>
+              <option value="3">Electric</option>
+              <option value="4">LPG</option>
+              <option value="5">CNG</option>
+              <option value="6">Hybrid</option>
+              <option value="7">Other Fuel Type</option>
+              <option value="8">Hydrogen</option>
+              <option value="9">Ethanol</option>
+            </select>
+
+            <label for="MANUFACTURE_YEAR">Manufacture Year:</label>
+            <select id="MANUFACTURE_YEAR" name="MANUFACTURE_YEAR">
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2021">2021</option>
+            <option value="2020">2020</option>
+            <option value="2019">2019</option>
+            <option value="2018">2018</option>
+            <option value="2017">2017</option>
+            <option value="2016">2016</option>
+            <option value="2015">2015</option>
+            <option value="2014">2014</option>
+            <option value="2013">2013</option>
+            <option value="2012">2012</option>
+            <option value="2011">2011</option>
+            <option value="2010">2010</option>
+            <option value="2009">2009</option>
+            <option value="2008">2008</option>
+            <option value="2007">2007</option>
+            <option value="2006">2006</option>
+            <option value="2005">2005</option>
+            <option value="2004">2004</option>
+            </select>
+
+            <label for="CUBIC_CAPACITY">Engine Cubic Capacity:</label>
+            <input type="text" id="CUBIC_CAPACITY" name="CUBIC_CAPACITY">
+
+            <label for="POWER">Engine Power (kw):</label>
+            <input type="text" id="POWER" name="POWER">
+
+            <label for="MILEAGE">Mileage:</label>
+            <input type="text" id="MILEAGE" name="MILEAGE">
+
+
+            <label for="TRANSMISSION_ID">Drive Type:</label>
+            <select id="TRANSMISSION_ID" name="TRANSMISSION_ID">
+              <option value="">Transmission Type</option>
+              <option value="1">Manual</option>
+              <option value="2">Automatic</option>
+            </select>
+
+            <label for="EMISSION_CLASS_ID">Fuel Type:</label>
+            <select id="EMISSION_CLASS_ID" name="EMISSION_CLASS_ID">
+              <option value="">Select Emission Class</option>
+              <option value="1">No Emission Class</option>
+              <option value="2">Euro 1</option>
+              <option value="3">Euro 2</option>
+              <option value="4">Euro 3</option>
+              <option value="5">Euro 4</option>
+              <option value="6">Euro 5</option>
+              <option value="7">Euro 6</option>
+              <option value="8">Euro 6c</option>
+              <option value="9">Euro 6d-TEMP</option>
+              <option value="10">Euro 6d</option>
+            </select>
+
+            <label for="DRIVE_ID">Drive Type:</label>
+            <select id="DRIVE_ID" name="DRIVE_ID">
+              <option value="">Select Drive Type</option>
+              <option value="1">Front wheel drive</option>
+              <option value="3">4x4</option>
+              <option value="4">4x2</option>
+            </select>
+
+            <label for="FUEL_CONSUMPTION_URBAN">Urban Fuel Consumption (Liter):</label>
+            <input type="text" id="FUEL_CONSUMPTION_URBAN" name="FUEL_CONSUMPTION_URBAN">
+
+            <label for="FUEL_CONSUMPTION_EXTRA_URBAN">Extra Urban Fuel Consumption (Liter):</label>
+            <input type="text" id="FUEL_CONSUMPTION_EXTRA_URBAN" name="FUEL_CONSUMPTION_EXTRA_URBAN">
+
+            <label for="FUEL_CONSUMPTION_COMBINED">Combined Fuel Consumption (Liter):</label>
+            <input type="text" id="FUEL_CONSUMPTION_COMBINED" name="FUEL_CONSUMPTION_COMBINED">
+
+            <label for="WEIGHT">Weight (Kg):</label>
+            <input type="text" id="WEIGHT" name="WEIGHT">
+
+            <label for="NUMBER_OF_GEARS">Number of Gears:</label>
+            <select id="NUMBER_OF_GEARS" name="NUMBER_OF_GEARS">
+            <option value="">Select number of gears</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            </select>
+
+
+            <label for="CARBON_DIOXIDE_EMISSION">CO2 Emission (Kiloton):</label>
+            <input type="text" id="CARBON_DIOXIDE_EMISSION" name="CARBON_DIOXIDE_EMISSION">
+
+            <label for="INTERIOR_MATERIAL">Interior Material:</label>
+            <select id="INTERIOR_MATERIAL" name="INTERIOR_MATERIAL">
+              <option value="">Interior Material</option>
+              <option value="Cloth interior">Cloth interior</option>
+              <option value="Full leather interior">Full leather interior</option>
+              <option value="Part leather interior">Part leather interior</option>
+              <option value="Alcantara interior">Alcantara interior</option>
+              <option value="Velour interior">Velour interior</option>
+              <option value="Other interior material">Other interior material</option>
+            </select>
+
+
+
+            <label for="SELLER_COUNTRY">Country the car is sold in:</label>
+            <select id="SELLER_COUNTRY" name="SELLER_COUNTRY"></select>
+            <script>
+                // Load countries from countries.json
+                fetch('/app/templates/countries.json')
+                    .then(response => response.json())
+                    .then(data => {
+                        const selectElement = document.getElementById('SELLER_COUNTRY');
+                        data.forEach(country => {
+                            const optionElement = document.createElement('option');
+                            optionElement.value = country;
+                            optionElement.text = country;
+                            selectElement.appendChild(optionElement);
+                        });
+                    })
+                    .catch(error => console.error('Error loading countries:', error));
+            </script>
+
+
+
+            <input type="submit" value="Predict">
+        </form>
+    </div>
+
+</body>
+</html>
